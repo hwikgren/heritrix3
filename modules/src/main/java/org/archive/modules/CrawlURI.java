@@ -116,7 +116,7 @@ import org.json.JSONObject;
  * (HTTP fetchers are responsible for setting the values using
  * {@link #putHttpResponseHeader(String, String)}).
  *
- * @author Gordon Mohr
+ * @author Gordon Mohr, modified by Heidi Jauhiainen
  */
 public class CrawlURI 
 implements Reporter, Serializable, OverlayContext, Comparable<CrawlURI> {
@@ -268,6 +268,12 @@ implements Reporter, Serializable, OverlayContext, Comparable<CrawlURI> {
     private byte[] contentDigest = null;
     private String contentDigestScheme = null;
 
+    /**
+     * @author Heidi Jauhiainen
+     * variables to hold the page content and its language
+    **/
+    private String contentText = "";
+    private String language = "";
     
     /**
      * If this value is non-null, a determination has been made that this CrawlURI instance is a revisit or 
@@ -1983,5 +1989,27 @@ implements Reporter, Serializable, OverlayContext, Comparable<CrawlURI> {
         return equals(via, u.via) && equals(uuri, u.uuri)
                 && equals(viaContext, u.viaContext)
                 && equals(pathFromSeed, u.pathFromSeed);
+    }
+    
+    /**
+     * @author Heidi Jauhiainen
+     * the language tester set the language and page content
+     * to be used later by LanguageWriter
+     */
+    
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setContentText(String contentText) {
+        this.contentText = contentText;
+    }
+
+    public String getContentText() {
+        return contentText;
     }
 }
