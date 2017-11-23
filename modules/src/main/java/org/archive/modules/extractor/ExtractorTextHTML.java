@@ -53,7 +53,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * TODO: Compare against extractors based on HTML parsing libraries for 
  * accuracy, completeness, and speed.
  * 
- * @authors gojomo (ExtractorHTML), hwikgren (modifications to ExtractorHTML)
+ * @author gojomo (ExtractorHTML)
+ * modified by Heidi Jauhiainen
  */
 public class ExtractorTextHTML extends ContentExtractor implements InitializingBean {
     @SuppressWarnings("unused")
@@ -370,7 +371,7 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
      * @param element
      * @param cs 
      * 
-     * modified by hwikgren
+     * modified by Heidi Jauhiainen
      * only interested in general href-links
      */
     protected void processGeneralTag(CrawlURI curi, CharSequence element,
@@ -670,7 +671,7 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
      * is TRANSIENT data. Make a copy if you want the data to live outside
      * of this extractors' lifetime.
      * 
-     * modified by hwikgren
+     * modified by Heidi Jauhiainen
      * - leaving out link extraction from meta and style tags
      * - adding call for languageTester to test cs.toString()
      */
@@ -719,8 +720,14 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
             } 
         }
         TextUtils.recycleMatcher(tags);
-        tester = new LanguageTester();
-        tester.testHTML(curi, cs.toString());
+        // if response code is 200-299 and the text is not robots.txt, send for testing
+        if (curi.is2XXSuccess()) {
+            String uri = curi.getURI();
+            if (uri.toLowerCase().indexOf("robots.txt")==-1) {
+                tester = new LanguageTester();
+                tester.testHTML(curi, cs.toString());
+            }
+        }
     }
 
 
