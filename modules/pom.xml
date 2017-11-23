@@ -70,6 +70,18 @@
 			<version>1.6.6</version>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>org.apache.pdfbox</groupId>
+	  <artifactId>pdfbox</artifactId>
+	  <version>1.8.0</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.netpreserve.commons</groupId>
+	  <artifactId>webarchive-commons</artifactId>
+	  <version>1.1.9-SNAPSHOT</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 	<build>
 		<plugins>

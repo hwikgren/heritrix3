@@ -568,7 +568,8 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
         }
 
         String mime = uri.getContentType().toLowerCase();
-        if (mime.startsWith("text/html")
+        String curi = uri.getURI();
+        if ((mime.startsWith("text/html") && curi.toLowerCase().indexOf(".pdf")==-1)
                 || mime.startsWith("application/xhtml")
                 || mime.startsWith("text/vnd.wap.wml")
                 || mime.startsWith("application/vnd.wap.wml")
