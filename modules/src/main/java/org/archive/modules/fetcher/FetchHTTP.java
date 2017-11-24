@@ -574,6 +574,10 @@ public class FetchHTTP extends Processor implements Lifecycle {
      *            Recorder for this request.
      * @param response
      *            Method used for the request.
+     * modified by Heidi Jauhiainen
+     * the original method did somehow not work in heritrix-3.1.1 so in order to read and print 
+     * for example Russian and Chinese a "hack" was created to preserve some charsets but 
+     * replacing others with utf-8
      */
     protected void setCharacterEncoding(CrawlURI curi, final Recorder rec,
             final HttpResponse response) {
@@ -581,7 +585,19 @@ public class FetchHTTP extends Processor implements Lifecycle {
         try {
             Charset charset = ContentType.getOrDefault(response.getEntity()).getCharset();
             if (charset != null) {
-                rec.setCharset(charset);
+                String encoding = charset.displayName();
+                if (encoding.equalsIgnoreCase("ISO-8859-1")) {
+                    rec.setCharset(Charset.forName("ISO-8859-1"));
+                }
+                else if (encoding.equalsIgnoreCase("windows-1251")) {
+                    rec.setCharset(Charset.forName("windows-1251"));
+                }
+                else if (encoding.equalsIgnoreCase("cp1251")) {
+                    rec.setCharset(Charset.forName("Cp1251"));
+                }
+                else {
+                    rec.setCharset(Charset.forName("UTF-8"));
+                }
             }
         } catch (IllegalArgumentException e) {
             // exception could be UnsupportedCharsetException or IllegalCharsetNameException
