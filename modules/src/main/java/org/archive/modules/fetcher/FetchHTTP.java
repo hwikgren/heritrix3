@@ -89,6 +89,8 @@ import org.springframework.context.Lifecycle;
 /**
  * HTTP fetcher that uses <a href="http://hc.apache.org/">Apache HttpComponents</a>.
  * @author nlevitt
+ * modified by Heidi Jauhiainen
+ * added charset check to setCharacterEncoding
  */
 public class FetchHTTP extends Processor implements Lifecycle {
 
