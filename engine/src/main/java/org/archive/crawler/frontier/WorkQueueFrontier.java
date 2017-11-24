@@ -79,6 +79,8 @@ import com.sleepycat.je.DatabaseException;
  *
  * @author Gordon Mohr
  * @author Christian Kohlschuetter
+ * modified by Heidi Jauhiainen
+ * added get Methods for queue counts
  */
 public abstract class WorkQueueFrontier extends AbstractFrontier
 implements Closeable, 
@@ -1578,6 +1580,27 @@ implements Closeable,
     @Override
     protected int getInProcessCount() {
         return inProcessQueues.size();
+    }
+    
+    /**
+     * Getting queue count for statistics tracker
+     * author hwikgren
+     * @return 
+     */
+    public long getAllQueueCount() {
+        return allQueues.size();
+    }
+    public long getRemainingQueueCount() {
+        int inProcessCount = inProcessQueues.size();
+        int readyCount = readyClassQueues.size();
+        int snoozedCount = getSnoozedCount();
+        int activeCount = inProcessCount + readyCount + snoozedCount;
+        int inactiveCount = getTotalEligibleInactiveQueues();
+        return activeCount + inactiveCount;
+    }
+    
+    public long getRetiredQueueCount() {
+        return getRetiredQueues().size();
     }
     
 } // TODO: slim class! Suspect it should be < 800 lines, shedding budgeting/reporting

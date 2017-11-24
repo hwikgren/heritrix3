@@ -127,6 +127,8 @@ import com.sleepycat.je.DatabaseException;
  * @author Parker Thompson
  * @author Kristinn Sigurdsson
  * @author gojomo
+ * modified by Heidi Jauhiainen
+ * added to progressStatisticsLegend
  */
 public class StatisticsTracker 
     implements 
@@ -420,13 +422,15 @@ public class StatisticsTracker
 
     /**
      * @return legend for progress-statistics lines/log
+     * modified by Heidi Jauhiainen
+     * added queue and TiB info
      */
     public String progressStatisticsLegend() {
         return "           timestamp" +
             "  discovered   " +
             "   queued   downloaded       doc/s(avg)  KB/s(avg) " +
             "  dl-failures   busy-thread   mem-use-KB  heap-size-KB " +
-            "  congestion   max-depth   avg-depth";
+            "  congestion   max-depth   avg-depth   allQueues   availableQ   retiredQ   TiB";
     }
     
     public String getProgressStamp() {

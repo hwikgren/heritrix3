@@ -85,6 +85,8 @@ import org.springframework.context.Lifecycle;
  *
  * @author Gordon Mohr
  * @author Kristinn Sigurdsson
+ * modified by Heidi Jauhiainen
+ * added get methods for queue counts
  *
  * @see org.archive.crawler.framework.CrawlController
  * @see StatisticsTracker
@@ -522,4 +524,11 @@ public interface Frontier extends Lifecycle, Reporter {
      * conditions need to be free to call this 'just in case'. 
      */
     public void endDisposition();
+    
+    /**
+     * added by Heidi Jauhiainen
+     */
+    public long getAllQueueCount();
+    public long getRemainingQueueCount();
+    public long getRetiredQueueCount();
 }

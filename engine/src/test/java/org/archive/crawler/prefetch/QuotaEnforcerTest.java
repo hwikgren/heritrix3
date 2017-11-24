@@ -57,7 +57,7 @@ import junit.framework.Assert;
  */
 public class QuotaEnforcerTest extends CrawlerProcessorTestBase {
     
-    static class MockFetchStats extends FetchStats {
+    /*static class MockFetchStats extends FetchStats {
         private static final long serialVersionUID = 1l;
 
         public void setNovelBytes(long n) {
@@ -417,5 +417,5 @@ public class QuotaEnforcerTest extends CrawlerProcessorTestBase {
         } else {
             assertEquals(FetchStatusCodes.S_UNATTEMPTED, curi.getFetchStatus());
         }
-    }
+    }*/
 }

@@ -585,10 +585,12 @@ public class WARCLanguageWriterProcessor extends WriterPoolProcessor implements 
         // get curi content and language for WARCLanguageWriter;
         String content = curi.getContentText();
         String language = curi.getLanguage();
-        try {
-            w.writeLanguageRecord(recordInfo, content, language);
-        } finally {
-            IOUtils.closeQuietly(ris);
+        if (language != null && !language.isEmpty() || !language.equalsIgnoreCase("")) {
+            try {
+                w.writeLanguageRecord(recordInfo, content, language);
+            } finally {
+                IOUtils.closeQuietly(ris);
+            }
         }
         
         return recordInfo.getRecordId();
