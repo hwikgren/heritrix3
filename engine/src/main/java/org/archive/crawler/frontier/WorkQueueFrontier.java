@@ -775,12 +775,14 @@ implements Closeable,
                 }
 
                 WorkQueue candidateQ = (WorkQueue) this.allQueues.get(workQueueKey);
-                if (candidateQ.getPrecedence() > expectedPrecedence) {
+                //modified by Heidi Jauhiainen
+                // crawl got stuck sometimes, this helped
+                /*if (candidateQ.getPrecedence() > expectedPrecedence) {
                     // queue demoted since placed; re-deactivate
                     deactivateQueue(candidateQ);
                     candidateQ.makeDirty();
                     continue;
-                }
+                }*/
 
                 try {
                     readyClassQueues.put(workQueueKey);

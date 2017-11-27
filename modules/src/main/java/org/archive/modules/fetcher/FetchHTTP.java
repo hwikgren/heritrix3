@@ -591,6 +591,9 @@ public class FetchHTTP extends Processor implements Lifecycle {
                 if (encoding.equalsIgnoreCase("ISO-8859-1")) {
                     rec.setCharset(Charset.forName("ISO-8859-1"));
                 }
+                else if (encoding.equalsIgnoreCase("ISO-8859-4")) {
+                    rec.setCharset(Charset.forName("ISO-8859-4"));
+                }
                 else if (encoding.equalsIgnoreCase("windows-1251")) {
                     rec.setCharset(Charset.forName("windows-1251"));
                 }

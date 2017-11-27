@@ -64,6 +64,15 @@ public class CrawlStatSnapshot {
     public long warcNovelUriCount;
     
     /**
+     * modified by Heidi Jauhiainen
+     * added variables for queues and terybytes
+     */
+    public long totalQueues;
+    public long remainingQueues;
+    public long retiredQueues;
+    public double terabytes;
+    
+    /**
      * Collect all relevant snapshot samples, from the given CrawlController
      * and StatisticsTracker (which also provides the previous snapshot 
      * for rate-calculations.
@@ -117,6 +126,12 @@ public class CrawlStatSnapshot {
         currentKiBPerSec = 
             (long) (((bytesProcessed-lastSnapshot.bytesProcessed)/1024)
             / (sampleTime / 1000d));
+        
+        //added by Heidi Jauhiainen
+        totalQueues = controller.getFrontier().getAllQueueCount();
+	remainingQueues = controller.getFrontier().getRemainingQueueCount();
+        retiredQueues = controller.getFrontier().getRetiredQueueCount();
+        terabytes = (double)bytesProcessed / 1099511627776L;
     }
     
     /**
@@ -142,6 +157,10 @@ public class CrawlStatSnapshot {
             .raAppend(153, ArchiveUtils.doubleToString(congestionRatio, 2))
             .raAppend(165, deepestUri)
             .raAppend(177, averageDepth)
+            .raAppend(188, totalQueues)
+            .raAppend(199, remainingQueues)
+            .raAppend(210, retiredQueues)
+            .raAppend(220, ArchiveUtils.doubleToString(terabytes, 4))
             .toString();
     }
     
