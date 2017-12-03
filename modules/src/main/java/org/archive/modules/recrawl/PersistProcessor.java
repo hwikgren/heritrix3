@@ -121,6 +121,7 @@ public abstract class PersistProcessor extends AbstractPersistProcessor {
         StoredClassCatalog sourceClassCatalog = sourceEnv.getClassCatalog();
         DatabaseConfig historyDbConfig = HISTORY_DB_CONFIG.toDatabaseConfig();
         historyDbConfig.setReadOnly(true);
+        
         Database sourceHistoryDB = sourceEnv.openDatabase(
                 null, URI_HISTORY_DBNAME, historyDbConfig);
         StoredSortedMap<String,Map> sourceHistoryMap = new StoredSortedMap<String,Map>(sourceHistoryDB,

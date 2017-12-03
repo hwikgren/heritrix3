@@ -424,7 +424,8 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
                 }
 
                 if ("a[data-remote='true']/@href".equals(context) || elementStr.equalsIgnoreCase(LINK)) {
-                    // HREFs treated as links
+                } else {
+                    // other HREFs treated as links
                     processLink(curi, value, context);
                 }
             }
@@ -686,6 +687,18 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
                 // comment match
                 // for now do nothing
             
+            } else if (tags.start(7) > 0) {
+                // <meta> match
+                int start = tags.start(5);
+                int end = tags.end(5);
+                assert start >= 0: "Start is: " + start + ", " + curi;
+                assert end >= 0: "End is :" + end + ", " + curi;
+                if (processMeta(curi,
+                    cs.subSequence(start, end))) {
+
+                    // meta tag included NOFOLLOW; abort processing
+                    break;
+                }
             } else if (tags.start(5) > 0) {
                 // generic <whatever> match
                 int start5 = tags.start(5);
