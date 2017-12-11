@@ -612,6 +612,7 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
            if(cs.getDecodeExceptionCount()>0) {
                curi.getNonFatalFailures().add(cs.getCodingException()); 
            }
+           curi.getRecorder().endReplays();
            // Set flag to indicate that link extraction is completed.
            return true;
         } catch (IOException e) {
@@ -619,6 +620,7 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
             logger.log(Level.WARNING,"Failed get of replay char sequence in " +
                 Thread.currentThread().getName(), e);
         }
+        
         return false;
     }
     
@@ -734,7 +736,8 @@ public class ExtractorTextHTML extends ContentExtractor implements InitializingB
             } 
         }
         TextUtils.recycleMatcher(tags);
-        // if response code is 200-299 and the text is not robots.txt, send for testing
+        //added by Heidi Jauhiainen
+        // if response code is 200-299 and the text is not robots.txt, send for language testing
         if (curi.is2XXSuccess()) {
             String uri = curi.getURI();
             if (uri.toLowerCase().indexOf("robots.txt")==-1) {

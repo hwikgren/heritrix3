@@ -37,8 +37,14 @@ public class RobotsDirectives implements Serializable {
     protected float crawlDelay = -1; 
     public transient boolean hasDirectives = false;
 
+    /**
+     * modified by Heidi Jauhiainen
+     * calling for longestPrefixLength2()
+     * @param path
+     * @return 
+     */
     public boolean allows(String path) {
-        return !(longestPrefixLength(disallows, path) > longestPrefixLength(allows, path));
+        return !(longestPrefixLength2(disallows, path) > longestPrefixLength2(allows, path));
     }
 
     /**
@@ -51,6 +57,48 @@ public class RobotsDirectives implements Serializable {
             String str) {
         String possiblePrefix = prefixSet.floor(str);
         if (possiblePrefix != null && str.startsWith(possiblePrefix)) {
+            return possiblePrefix.length();
+        } else {
+            return 0;
+        }
+    }
+    
+    /**added by Heidi Jauhiainen
+     * ConcurrentSkipListSet's floor() method returns 
+     * /et/reisiotsing/ajaxPackageOfferSearch/
+     * for /et/reisiotsing/ajaxPackageOfferSearch?oiri=CNDTLL6ACNDTLLetc.
+     * even though robots.txt also contains 
+     * /et/reisiotsing/ajaxPackageOfferSearch
+     * and as the first does not match str.startsWith, the method returns 0
+     * allowing the page to be loaded.
+     * This method may be slower but as prefixSet is ordered should return 
+     * the length of the longest prefix.
+     * @param prefixSet
+     * @param str
+     * @return 
+     */
+    protected int longestPrefixLength2(ConcurrentSkipListSet<String> prefixSet,
+            String str) {
+        String possiblePrefix = "";
+        int prefixLength;
+        int longest = 0;
+        boolean hasPrefix = false;
+        for (String path : prefixSet) {
+            prefixLength = 0;
+            if (str.startsWith(path)) {
+                hasPrefix = true;
+                prefixLength = path.length();
+                if (prefixLength > longest) {
+                    longest = prefixLength;
+                    possiblePrefix = path;
+                }
+            }
+            // break when the longest prefix has been found
+            if (hasPrefix && prefixLength < longest) {
+                break;
+            }
+        }
+        if (!possiblePrefix.equals("")) {
             return possiblePrefix.length();
         } else {
             return 0;
