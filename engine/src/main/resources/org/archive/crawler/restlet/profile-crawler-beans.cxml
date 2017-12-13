@@ -37,9 +37,12 @@
 # This Properties map is specified in the Java 'property list' text format
 # http://java.sun.com/javase/6/docs/api/java/util/Properties.html#load%28java.io.Reader%29
 
-metadata.operatorContactUrl=ENTER_AN_URL_WITH_YOUR_CONTACT_INFO_HERE_FOR_WEBMASTERS_AFFECTED_BY_YOUR_CRAWL
-metadata.jobName=basic
-metadata.description=Basic crawl starting with useful defaults
+metadata.operatorContactUrl=<YOUR WEBPAGE WITH INFORMATION ABOUT YOUR CRAWLER>
+metadata.operator=<YOUR NAME>
+metadata.organization=<YOUR AFFILIATION>
+metadata.OperatorFrom=<YOUR EMAIL>
+metadata.jobName=<CRAWL NAME>
+metadata.description=<DESCRIPTION OF YOU CRAWL>
 
 ##..more?..##
    </value>
@@ -48,31 +51,30 @@ metadata.description=Basic crawl starting with useful defaults
 
  <!-- overrides from declared <prop> elements, more easily allowing
       multiline values or even declared beans -->
- <bean id="longerOverrides" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+ <!-- <bean id="longerOverrides" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
   <property name="properties">
    <props>
     <prop key="seeds.textSource.value">
 
 # URLS HERE
-http://example.example/example
-
+#http://example.example/example
     </prop>
    </props>
   </property>
- </bean>
+ </bean> -->
 
  <!-- CRAWL METADATA: including identification of crawler/operator -->
  <bean id="metadata" class="org.archive.modules.CrawlMetadata" autowire="byName">
        <property name="operatorContactUrl" value="[see override above]"/>
        <property name="jobName" value="[see override above]"/>
        <property name="description" value="[see override above]"/>
-  <!-- <property name="robotsPolicyName" value="obey"/> -->
-  <!-- <property name="operator" value=""/> -->
-  <!-- <property name="operatorFrom" value=""/> -->
-  <!-- <property name="organization" value=""/> -->
+  		<property name="robotsPolicyName" value="obey"/>
+  		<property name="operator" value="[see override above]"/>
+  		<property name="operatorFrom" value="[see override above]"/>
+  		<property name="organization" value="[see override above]"/>
   <!-- <property name="audience" value=""/> -->
-  <!-- <property name="userAgentTemplate" 
-         value="Mozilla/5.0 (compatible; heritrix/@VERSION@ +@OPERATOR_CONTACT_URL@)"/> -->
+  <property name="userAgentTemplate" 
+         value="Mozilla/5.0 (compatible; <NAME OF YOUR BOT!!!>/@VERSION@ +@OPERATOR_CONTACT_URL@)"/>
        
  </bean>
  
@@ -80,7 +82,7 @@ http://example.example/example
       ConfigString allows simple, inline specification of a moderate
       number of seeds; see below comment for example of using an
       arbitrarily-large external file. -->
- <bean id="seeds" class="org.archive.modules.seeds.TextSeedModule">
+ <!--<bean id="seeds" class="org.archive.modules.seeds.TextSeedModule">
      <property name="textSource">
       <bean class="org.archive.spring.ConfigString">
        <property name="value">
@@ -89,15 +91,15 @@ http://example.example/example
         </value>
        </property>
       </bean>
-     </property>
+     </property> -->
 <!-- <property name='sourceTagSeeds' value='false'/> -->
 <!-- <property name='blockAwaitingSeedLines' value='-1'/> -->
- </bean>
+ <!-- </bean> -->
  
  <!-- SEEDS ALTERNATE APPROACH: specifying external seeds.txt file in
       the job directory, similar to the H1 approach. 
       Use either the above, or this, but not both. -->
- <!-- 
+ 
  <bean id="seeds" class="org.archive.modules.seeds.TextSeedModule">
   <property name="textSource">
    <bean class="org.archive.spring.ConfigFile">
@@ -107,31 +109,30 @@ http://example.example/example
   <property name='sourceTagSeeds' value='false'/>
   <property name='blockAwaitingSeedLines' value='-1'/>
  </bean>
-  -->
+  
  
  <bean id="acceptSurts" class="org.archive.modules.deciderules.surt.SurtPrefixedDecideRule">
   <!-- <property name="decision" value="ACCEPT"/> -->
-  <!-- <property name="seedsAsSurtPrefixes" value="true" /> -->
+  <property name="seedsAsSurtPrefixes" value="false" />
   <!-- <property name="alsoCheckVia" value="false" /> -->
   <!-- <property name="surtsSourceFile" value="" /> -->
   <!-- <property name="surtsDumpFile" value="${launchId}/surts.dump" /> -->
-  <!-- <property name="surtsSource">
+  <property name="surtsSource">
         <bean class="org.archive.spring.ConfigString">
          <property name="value">
           <value>
-           # example.com
-           # http://www.example.edu/path1/
-           # +http://(org,example,
+          # wanted domain(s) as list in surt form:
+           # +http://(fi,
           </value>
          </property> 
         </bean>
-       </property> -->
+       </property>
  </bean>
 
  <!-- SCOPE: rules for which discovered URIs to crawl; order is very 
       important because last decision returned other than 'NONE' wins. -->
  <bean id="scope" class="org.archive.modules.deciderules.DecideRuleSequence">
-  <!-- <property name="logToFile" value="false" /> -->
+  <property name="logToFile" value="false" />
   <property name="rules">
    <list>
     <!-- Begin by REJECTing all... -->
@@ -152,11 +153,11 @@ http://example.example/example
           <property name="decision" value="REJECT"/>
           <property name="seedsAsSurtPrefixes" value="false"/>
           <property name="surtsDumpFile" value="${launchId}/negative-surts.dump" /> 
-     <!-- <property name="surtsSource">
+     	  <property name="surtsSource">
            <bean class="org.archive.spring.ConfigFile">
             <property name="path" value="negative-surts.txt" />
            </bean>
-          </property> -->
+          </property>
     </bean>
     <!-- ...and REJECT those from a configurable (initially empty) set of URI regexes... -->
     <bean class="org.archive.modules.deciderules.MatchesListRegexDecideRule">
@@ -166,6 +167,10 @@ http://example.example/example
            <list>
            </list>
           </property> -->
+    </bean>
+    <bean class="org.archive.modules.deciderules.MatchesTextOnlyDecideRule">
+        <property name="decision" value="REJECT" />
+        <property name="usePreset" value="ALL" />
     </bean>
     <!-- ...and REJECT those with suspicious repeating path-segments... -->
     <bean class="org.archive.modules.deciderules.PathologicalPathDecideRule">
@@ -200,6 +205,8 @@ http://example.example/example
  <!-- first, processors are declared as top-level named beans -->
  <bean id="candidateScoper" class="org.archive.crawler.prefetch.CandidateScoper">
  </bean>
+  <bean id="languagePrecedence" class="org.archive.modules.LanguagePrecedenceProcessor">
+ </bean>
  <bean id="preparer" class="org.archive.crawler.prefetch.FrontierPreparer">
   <!-- <property name="preferenceDepthHops" value="-1" /> -->
   <!-- <property name="preferenceEmbedHops" value="1" /> -->
@@ -209,9 +216,9 @@ http://example.example/example
   <!-- <property name="queueAssignmentPolicy"> 
         <ref bean="queueAssignmentPolicy" />
        </property> -->
-  <!-- <property name="uriPrecedencePolicy"> 
+  <property name="uriPrecedencePolicy"> 
         <ref bean="uriPrecedencePolicy" />
-       </property> -->
+       </property>
   <!-- <property name="costAssignmentPolicy"> 
         <ref bean="costAssignmentPolicy" />
        </property> -->
@@ -222,6 +229,8 @@ http://example.example/example
    <list>
     <!-- apply scoping rules to each individual candidate URI... -->
     <ref bean="candidateScoper"/>
+    <!-- set candidate uri's precedence to 1, if viaUri's language is what is wanted -->
+    <ref bean="languagePrecedence"/>
     <!-- ...then prepare those ACCEPTed to be enqueued to frontier. -->
     <ref bean="preparer"/>
    </list>
@@ -231,7 +240,7 @@ http://example.example/example
  <!-- FETCH CHAIN --> 
  <!-- first, processors are declared as top-level named beans -->
  <bean id="preselector" class="org.archive.crawler.prefetch.Preselector">
-  <!-- <property name="recheckScope" value="false" /> -->
+  <property name="recheckScope" value="true" />
   <!-- <property name="blockAll" value="false" /> -->
   <!-- <property name="blockByRegex" value="" /> -->
   <!-- <property name="allowByRegex" value="" /> -->
@@ -257,19 +266,21 @@ http://example.example/example
       </bean> -->
  <bean id="fetchHttp" class="org.archive.modules.fetcher.FetchHTTP">
   <!-- <property name="useHTTP11" value="false" /> -->
-  <!-- <property name="maxLengthBytes" value="0" /> -->
+  <property name="maxLengthBytes" value="100000000" />
   <!-- <property name="timeoutSeconds" value="1200" /> -->
   <!-- <property name="maxFetchKBSec" value="0" /> -->
-  <!-- <property name="defaultEncoding" value="ISO-8859-1" /> -->
-  <!-- <property name="shouldFetchBodyRule"> 
-        <bean class="org.archive.modules.deciderules.AcceptDecideRule"/>
-       </property> -->
+  <property name="defaultEncoding" value="UTF-8" />
+  <property name="shouldFetchBodyRule"> 
+        <bean class="org.archive.modules.deciderules.ContentTypeNotMatchesTextDecideRule">
+   			<property name="decision" value="REJECT"/>
+   		</bean>
+  </property>
   <!-- <property name="soTimeoutMs" value="20000" /> -->
   <!-- <property name="sendIfModifiedSince" value="true" /> -->
   <!-- <property name="sendIfNoneMatch" value="true" /> -->
   <!-- <property name="sendConnectionClose" value="true" /> -->
   <!-- <property name="sendReferer" value="true" /> -->
-  <!-- <property name="sendRange" value="false" /> -->
+  <property name="sendRange" value="true" />
   <!-- <property name="ignoreCookies" value="false" /> -->
   <!-- <property name="sslTrustLevel" value="OPEN" /> -->
   <!-- <property name="acceptHeaders"> 
@@ -288,7 +299,7 @@ http://example.example/example
  </bean>
  <bean id="extractorHttp" class="org.archive.modules.extractor.ExtractorHTTP">
  </bean>
- <bean id="extractorHtml" class="org.archive.modules.extractor.ExtractorHTML">
+ <bean id="extractorHtml" class="org.archive.modules.extractor.ExtractorTextHTML">
   <!-- <property name="extractJavascript" value="true" /> -->
   <!-- <property name="extractValueAttributes" value="true" /> -->
   <!-- <property name="ignoreFormActionUrls" value="false" /> -->
@@ -305,6 +316,8 @@ http://example.example/example
  </bean>
  <bean id="extractorSwf" class="org.archive.modules.extractor.ExtractorSWF">
  </bean>    
+ <bean id="extractorPDF" class="org.archive.modules.extractor.ExtractorTextPDF">
+ </bean>
  <!-- now, processors are assembled into ordered FetchChain bean -->
  <bean id="fetchProcessors" class="org.archive.modules.FetchChain">
   <property name="processors">
@@ -323,18 +336,20 @@ http://example.example/example
     <!-- ...extract outlinks from HTML content... -->
     <ref bean="extractorHtml"/>
     <!-- ...extract outlinks from CSS content... -->
-    <ref bean="extractorCss"/>
+    <!-- <ref bean="extractorCss"/> -->
     <!-- ...extract outlinks from Javascript content... -->
     <ref bean="extractorJs"/>
     <!-- ...extract outlinks from Flash content... -->
-    <ref bean="extractorSwf"/>
+    <!-- <ref bean="extractorSwf"/> -->
+    <!-- ...extract outlinks from PDF content... -->
+    <ref bean="extractorPDF" />
    </list>
   </property>
  </bean>
   
  <!-- DISPOSITION CHAIN -->
  <!-- first, processors are declared as top-level named beans  -->
- <bean id="warcWriter" class="org.archive.modules.writer.WARCWriterProcessor">
+ <bean id="warcWriter" class="org.archive.modules.writer.WARCLanguageWriterProcessor">
   <!-- <property name="compress" value="true" /> -->
   <!-- <property name="prefix" value="IAH" /> -->
   <!-- <property name="suffix" value="${HOSTNAME}" /> -->
@@ -350,8 +365,8 @@ http://example.example/example
         </list>
        </property> -->
   <!-- <property name="template" value="${prefix}-${timestamp17}-${serialno}-${heritrix.pid}~${heritrix.hostname}~${heritrix.port}" /> -->
-  <!-- <property name="writeRequests" value="true" /> -->
-  <!-- <property name="writeMetadata" value="true" /> -->
+  <property name="writeRequests" value="false" />
+  <property name="writeMetadata" value="false" />
   <!-- <property name="writeRevisitForIdenticalDigests" value="true" /> -->
   <!-- <property name="writeRevisitForNotModified" value="true" /> -->
   <!-- <property name="startNewFilesOnCheckpoint" value="true" /> -->
@@ -389,8 +404,8 @@ http://example.example/example
  <!-- CRAWLCONTROLLER: Control interface, unifying context -->
  <bean id="crawlController" 
    class="org.archive.crawler.framework.CrawlController">
-  <!-- <property name="maxToeThreads" value="25" /> -->
-  <!-- <property name="pauseAtStart" value="true" /> -->
+  		<property name="maxToeThreads" value="400" />
+  		<property name="pauseAtStart" value="false" />
   <!-- <property name="runWhileEmpty" value="false" /> -->
   <!-- <property name="recorderInBufferBytes" value="524288" /> -->
   <!-- <property name="recorderOutBufferBytes" value="16384" /> -->
@@ -400,16 +415,18 @@ http://example.example/example
  <!-- FRONTIER: Record of all URIs discovered and queued-for-collection -->
  <bean id="frontier" 
    class="org.archive.crawler.frontier.BdbFrontier">
-  <!-- <property name="queueTotalBudget" value="-1" /> -->
+  <property name="queueTotalBudget" value="100000" />
   <!-- <property name="balanceReplenishAmount" value="3000" /> -->
   <!-- <property name="errorPenaltyAmount" value="100" /> -->
   <!-- <property name="precedenceFloor" value="255" /> -->
-  <!-- <property name="queuePrecedencePolicy">
-        <bean class="org.archive.crawler.frontier.precedence.BaseQueuePrecedencePolicy" />
-       </property> -->
+  <property name="queuePrecedencePolicy">
+        <bean class="org.archive.crawler.frontier.precedence.HighestUriQueuePrecedencePolicy">
+    		<property name="basePrecedence" value="3"/>
+   		</bean>
+  </property>
   <!-- <property name="snoozeLongMs" value="300000" /> -->
-  <!-- <property name="retryDelaySeconds" value="900" /> -->
-  <!-- <property name="maxRetries" value="30" /> -->
+  <property name="retryDelaySeconds" value="300" />
+  <property name="maxRetries" value="10" />
   <!-- <property name="recoveryLogEnabled" value="true" /> -->
   <!-- <property name="maxOutlinks" value="6000" /> -->
   <!-- <property name="extractIndependently" value="false" /> -->
@@ -501,7 +518,7 @@ http://example.example/example
    New associations may also be added mid-crawl using the scripting facility.
   -->
 
-<!--
+
 <bean class='org.archive.crawler.spring.SurtPrefixesSheetAssociation'>
  <property name='surtPrefixes'>
   <list>
@@ -516,7 +533,6 @@ http://example.example/example
   </list>
  </property>
 </bean>
--->
 
  <!-- 
    OPTIONAL BUT RECOMMENDED BEANS
@@ -572,21 +588,21 @@ http://example.example/example
  
 
  <!-- QUEUE ASSIGNMENT POLICY -->
- <!--
+ 
  <bean id="queueAssignmentPolicy" 
-   class="org.archive.crawler.frontier.SurtAuthorityQueueAssignmentPolicy">
+   class="org.archive.crawler.frontier.AssignmentLevelSurtQueueAssignmentPolicy">
   <property name="forceQueueAssignment" value="" />
   <property name="deferToPrevious" value="true" />
   <property name="parallelQueues" value="1" />
  </bean>
- -->
+ 
  
  <!-- URI PRECEDENCE POLICY -->
- <!--
+ 
  <bean id="uriPrecedencePolicy" 
-   class="org.archive.crawler.frontier.precedence.CostUriPrecedencePolicy">
+   class="org.archive.crawler.frontier.precedence.LanguageUriPrecedencePolicy">
  </bean>
- -->
+ 
  
  <!-- COST ASSIGNMENT POLICY -->
  <!--
@@ -643,7 +659,7 @@ http://example.example/example
        </property> -->
   <!-- <property name="reportsDir" value="${launchId}/reports" /> -->
   <!-- <property name="liveHostReportSize" value="20" /> -->
-  <!-- <property name="intervalSeconds" value="20" /> -->
+  <property name="intervalSeconds" value="300" />
   <!-- <property name="keepSnapshotsCount" value="5" /> -->
   <!-- <property name="liveHostReportSize" value="20" /> -->
  </bean>
