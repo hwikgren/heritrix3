@@ -10,3 +10,5 @@ contrib/target
 */.classpath
 */.project
 */.settings
+README.md
+dist/README.txt
